@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#667eea">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>CPU Scheduling Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <div id="loader" class="loader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <div class="loader-text">Loading...</div>
+        </div>
+    </div>
+
+    
+    <div class="animated-bg"></div>
+    <div class="mouse-follower"></div>
+
+    
+    <section class="carousel-section">
+        <div class="carousel-container">
+            <button class="carousel-arrow carousel-arrow--prev" aria-label="Previous slide">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="15 18 9 12 15 6"></polyline>
+                </svg>
+            </button>
+            <button class="carousel-arrow carousel-arrow--next" aria-label="Next slide">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+            </button>
+            <div class="carousel-slide active">
+                <div class="carousel-content">
+                    <h2>First Come First Serve</h2>
+                    <p>Simple and intuitive scheduling algorithm</p>
+                </div>
+            </div>
+            <div class="carousel-slide">
+                <div class="carousel-content">
+                    <h2>Shortest Job First</h2>
+                    <p>Optimize for minimum waiting time</p>
+                </div>
+            </div>
+            <div class="carousel-slide">
+                <div class="carousel-content">
+                    <h2>Round Robin</h2>
+                    <p>Fair time-sharing with quantum slices</p>
+                </div>
+            </div>
+            <div class="carousel-slide">
+                <div class="carousel-content">
+                    <h2>Priority Scheduling</h2>
+                    <p>Execute based on process priority</p>
+                </div>
+            </div>
+            <div class="carousel-indicators">
+                <span class="indicator active" data-slide="0"></span>
+                <span class="indicator" data-slide="1"></span>
+                <span class="indicator" data-slide="2"></span>
+                <span class="indicator" data-slide="3"></span>
+            </div>
+        </div>
+    </section>
+
+    
+    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <svg class="theme-icon theme-icon--sun" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="theme-icon theme-icon--moon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+    </button>
+
+    <div class="container">
+        <header class="header">
+            <h1>CPU Scheduling Simulator</h1>
+            <p>Visualize and compare different CPU scheduling algorithms</p>
+        </header>
+
+        <main class="main-content">
+            
+            <section class="control-panel">
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Algorithm Configuration</h3>
+                    </div>
+                    <div class="card__body">
+                        <div class="form-group">
+                            <label for="algorithm-select" class="form-label">Scheduling Algorithm</label>
+                            <select id="algorithm-select" class="form-control">
+                                <option value="fcfs">First Come First Serve (FCFS)</option>
+                                <option value="sjf">Shortest Job First (SJF)</option>
+                                <option value="srtf">Shortest Remaining Time First (SRTF)</option>
+                                <option value="priority">Priority Scheduling (Non-Preemptive)</option>
+                                <option value="priority_preemptive">Priority Scheduling (Preemptive)</option>
+                                <option value="rr">Round Robin (RR)</option>
+                            </select>
+                        </div>
+
+                        <div id="quantum-group" class="form-group hidden">
+                            <label for="time-quantum" class="form-label">Time Quantum</label>
+                            <input type="number" id="time-quantum" class="form-control" min="1" value="3" placeholder="Enter time quantum">
+                        </div>
+
+                        <div class="algorithm-description">
+                            <p id="algorithm-desc">Non-preemptive algorithm where processes are executed in order of arrival</p>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Add Process</h3>
+                    </div>
+                    <div class="card__body">
+                        <form id="process-form" class="process-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="process-id" class="form-label">Process ID</label>
+                                    <input type="text" id="process-id" class="form-control" placeholder="P1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="arrival-time" class="form-label">Arrival Time</label>
+                                    <input type="number" id="arrival-time" class="form-control" min="0" value="0" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="burst-time" class="form-label">Burst Time</label>
+                                    <input type="number" id="burst-time" class="form-control" min="1" value="1" required>
+                                </div>
+                                <div id="priority-group" class="form-group hidden">
+                                    <label for="priority" class="form-label">Priority</label>
+                                    <input type="number" id="priority" class="form-control" min="1" value="1" placeholder="1 = highest">
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn--primary">Add Process</button>
+                                <button type="button" id="load-sample" class="btn btn--secondary">Load Sample</button>
+                                <button type="button" id="clear-all" class="btn btn--outline">Clear All</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                
+                <div class="card">
+                    <div class="card__header">
+                        <div class="flex justify-between items-center">
+                            <h3>Process List</h3>
+                            <span id="process-count" class="status status--info">0 processes</span>
+                        </div>
+                    </div>
+                    <div class="card__body">
+                        <div id="process-list" class="process-list">
+                            <div class="empty-state">
+                                <p>No processes added yet. Add processes using the form above.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="simulation-controls">
+                    <button id="simulate-btn" class="btn btn--primary btn--lg btn--full-width" disabled>
+                        Run Simulation
+                    </button>
+                </div>
+            </section>
+
+            
+            <section class="results-panel">
+                
+                <div class="card">
+                    <div class="card__header">
+                        <div class="flex justify-between items-center">
+                            <h3>Gantt Chart</h3>
+                            <button id="export-btn" class="btn btn--secondary btn--sm hidden">Export Results</button>
+                        </div>
+                    </div>
+                    <div class="card__body">
+                        <div id="gantt-chart" class="gantt-chart">
+                            <div class="empty-state">
+                                <p>Run simulation to view Gantt chart</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div class="card">
+                    <div class="card__header">
+                        <h3>Performance Metrics</h3>
+                    </div>
+                    <div class="card__body">
+                        <div id="metrics-table-container" class="metrics-container">
+                            <div class="empty-state">
+                                <p>Run simulation to view performance metrics</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        
+        <div id="error-message" class="error-message hidden">
+            <div class="status status--error">
+                <span id="error-text"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        (function() {
+            const html = document.documentElement;
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            html.setAttribute('data-color-scheme', savedTheme);
+        })();
+        
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-color-scheme', savedTheme);
+        
+        function updateThemeIcon(theme) {
+            const sunIcon = document.querySelector('.theme-icon--sun');
+            const moonIcon = document.querySelector('.theme-icon--moon');
+            if (theme === 'dark') {
+                sunIcon.style.display = 'none';
+                moonIcon.style.display = 'block';
+            } else {
+                sunIcon.style.display = 'block';
+                moonIcon.style.display = 'none';
+            }
+        }
+        
+        updateThemeIcon(savedTheme);
+        
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = html.getAttribute('data-color-scheme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                html.setAttribute('data-color-scheme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeIcon(newTheme);
+            });
+        }
+
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('loader');
+            setTimeout(() => {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+
+        const mouseFollower = document.querySelector('.mouse-follower');
+        document.addEventListener('mousemove', (e) => {
+            mouseFollower.style.left = e.clientX + 'px';
+            mouseFollower.style.top = e.clientY + 'px';
+        });
+
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const indicators = document.querySelectorAll('.indicator');
+        const totalSlides = slides.length;
+        let autoAdvanceInterval;
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        function showSlide(index) {
+            if (index < 0) {
+                index = totalSlides - 1;
+            } else if (index >= totalSlides) {
+                index = 0;
+            }
+            
+            currentSlide = index;
+            
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+            });
+            indicators.forEach((indicator, i) => {
+                indicator.classList.toggle('active', i === index);
+            });
+        }
+
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+
+        function prevSlide() {
+            showSlide(currentSlide - 1);
+        }
+
+        function startAutoAdvance() {
+            if (autoAdvanceInterval) {
+                clearInterval(autoAdvanceInterval);
+            }
+            autoAdvanceInterval = setInterval(nextSlide, 4000);
+        }
+
+        startAutoAdvance();
+
+        const prevArrow = document.querySelector('.carousel-arrow--prev');
+        const nextArrow = document.querySelector('.carousel-arrow--next');
+        
+        if (prevArrow) {
+            prevArrow.addEventListener('click', () => {
+                prevSlide();
+                startAutoAdvance();
+            });
+        }
+        
+        if (nextArrow) {
+            nextArrow.addEventListener('click', () => {
+                nextSlide();
+                startAutoAdvance();
+            });
+        }
+
+        indicators.forEach((indicator, index) => {
+            indicator.addEventListener('click', () => {
+                showSlide(index);
+                startAutoAdvance();
+            });
+        });
+
+        const carouselContainer = document.querySelector('.carousel-container');
+        if (carouselContainer) {
+            carouselContainer.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, { passive: true });
+
+            carouselContainer.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, { passive: true });
+        }
+
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    nextSlide();
+                } else {
+                    prevSlide();
+                }
+                startAutoAdvance();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            const activeElement = document.activeElement;
+            const isInputFocused = activeElement.tagName === 'INPUT' || 
+                                   activeElement.tagName === 'TEXTAREA' || 
+                                   activeElement.tagName === 'SELECT';
+            
+            if (isInputFocused) {
+                return;
+            }
+
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+                e.preventDefault();
+                nextSlide();
+                startAutoAdvance();
+            } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                prevSlide();
+                startAutoAdvance();
+            }
+        });
+
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 20;
+                const rotateY = (centerX - x) / 20;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            });
+        });
+    </script>
+</body>
+</html>
