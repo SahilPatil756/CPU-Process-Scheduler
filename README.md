@@ -2,7 +2,9 @@
 A comprehensive web-based simulator for visualizing and comparing different CPU scheduling algorithms with an intuitive graphical interface.
 
 🚀 Features
+
 📊 Supported Scheduling Algorithms
+
 FCFS (First Come First Serve) - Non-preemptive
 
 SJF (Shortest Job First) - Non-preemptive
@@ -14,6 +16,7 @@ Priority Scheduling - Both preemptive and non-preemptive versions
 Round Robin - Preemptive with configurable time quantum
 
 🎨 User Interface Features
+
 Responsive Design - Works seamlessly on desktop, tablet, and mobile devices
 
 Dark/Light Theme - Toggle between themes with persistent preferences
@@ -29,6 +32,7 @@ Carousel Interface - Algorithm overview with smooth navigation
 Export Functionality - Download results as CSV files
 
 📈 Performance Metrics
+
 Turnaround Time
 
 Waiting Time
@@ -40,7 +44,9 @@ CPU Utilization
 Start and Completion Times
 
 📖 How to Use
+
 1. Configure Algorithm
+   
 Select your desired scheduling algorithm from the dropdown
 
 Configure time quantum for Round Robin if needed
@@ -67,7 +73,9 @@ Download simulation results as CSV for further analysis
 Includes all process data and calculated metrics
 
 🎯 Algorithm Details
+
 First Come First Serve (FCFS)
+
 Type: Non-preemptive
 
 Description: Processes are executed in order of arrival
@@ -75,6 +83,7 @@ Description: Processes are executed in order of arrival
 Best For: Simple systems with similar process burst times
 
 Shortest Job First (SJF)
+
 Type: Non-preemptive
 
 Description: Executes shortest jobs first to minimize waiting time
@@ -82,6 +91,7 @@ Description: Executes shortest jobs first to minimize waiting time
 Best For: Batch systems where burst times are known
 
 Shortest Remaining Time First (SRTF)
+
 Type: Preemptive
 
 Description: Preemptive version of SJF that can interrupt running processes
@@ -89,6 +99,7 @@ Description: Preemptive version of SJF that can interrupt running processes
 Best For: Interactive systems requiring quick response
 
 Priority Scheduling
+
 Non-preemptive: Higher priority processes run to completion
 
 Preemptive: Higher priority processes can preempt lower ones
@@ -96,6 +107,7 @@ Preemptive: Higher priority processes can preempt lower ones
 Note: Lower priority number indicates higher priority
 
 Round Robin (RR)
+
 Type: Preemptive
 
 Description: Each process gets a fixed time quantum
@@ -103,7 +115,9 @@ Description: Each process gets a fixed time quantum
 Best For: Time-sharing systems and general-purpose OS
 
 🔧 Technical Implementation
+
 Frontend Technologies
+
 HTML5 - Semantic structure and accessibility
 
 CSS3 - Modern styling with CSS variables and Grid/Flexbox
@@ -111,6 +125,7 @@ CSS3 - Modern styling with CSS variables and Grid/Flexbox
 Vanilla JavaScript - No external dependencies
 
 Key Features
+
 Modular Design - Clean separation of concerns
 
 Responsive Layout - Mobile-first approach
